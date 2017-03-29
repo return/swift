@@ -126,6 +126,8 @@ class StdlibDeploymentTarget(object):
 
     Android = Platform("android", archs=["armv7"])
 
+    Haiku = Platform("haiku", archs=["x86_64"])
+
     # The list of known platforms.
     known_platforms = [
         OSX,
@@ -135,7 +137,8 @@ class StdlibDeploymentTarget(object):
         Linux,
         FreeBSD,
         Cygwin,
-        Android]
+        Android,
+	Haiku]
 
     # Cache of targets by name.
     _targets_by_name = dict((target.name, target)
@@ -180,6 +183,9 @@ class StdlibDeploymentTarget(object):
         elif system == 'CYGWIN_NT-10.0':
             if machine == 'x86_64':
                 return StdlibDeploymentTarget.Cygwin.x86_64
+        elif system == 'Haiku':
+            if machine == 'x86_64':
+                return StdlibDeploymentTarget.Haiku.x86_64
 
         return None
 

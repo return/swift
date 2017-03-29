@@ -1320,7 +1320,7 @@ bool toolchains::GenericUnix::shouldProvideRPathToLinker() const {
 
 std::string toolchains::GenericUnix::getPreInputObjectPath(
     StringRef RuntimeLibraryPath) const {
-  // On Linux and FreeBSD (really, ELF binaries) we need to add objects
+  // On Linux and FreeBSD and Haiku (really, ELF binaries) we need to add objects
   // to provide markers and size for the metadata sections.
   SmallString<128> PreInputObjectPath = RuntimeLibraryPath;
   llvm::sys::path::append(PreInputObjectPath,

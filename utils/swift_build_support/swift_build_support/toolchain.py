@@ -129,7 +129,6 @@ class MacOSX(Darwin):
     def __init__(self, toolchain='default'):
         super(MacOSX, self).__init__(sdk='macosx', toolchain=toolchain)
 
-
 class Linux(GenericUnix):
     def __init__(self):
         super(Linux, self).__init__(['', '-3.8', '-3.7', '-3.6', '-3.5'])
@@ -163,11 +162,34 @@ class FreeBSD(GenericUnix):
             return None
         return int(out)
 
-
 class Cygwin(Linux):
     # Currently, Cygwin is considered as the same as Linux.
     pass
 
+class Haiku(GenericUnix):
+    def __init__(self):
+	# For testing toolchain initializer on non-FreeBSD systems
+	sys = platform.system()
+	if sys == 'Haiku':
+	    suffixes = ['']
+	# See: https://github.com/apple/swift/pull/169
+	# Building Swift from source requires a recent version of the Clang
+	# compiler with C++14 support.
+	super(Haiku, self).__init__(suffixes)
+
+    @cache_util.reify
+    def _release_date(self):
+	"""Return the release date for Haiku operating system on this host.
+	If the release date cannot be ascertained, return None.
+	"""
+	# For details on `sysctl`, see:
+	# http://www.freebsd.org/cgi/man.cgi?sysctl(8)
+	#out = shell.capture(['sysctl', '-n', 'kern.osreldate'],
+	#                    dry_run=False, echo=False, optional=True)
+	if out is None:
+	    return None
+	return int(out)
+	
 
 def host_toolchain(**kwargs):
     sys = platform.system()
@@ -179,6 +201,8 @@ def host_toolchain(**kwargs):
         return FreeBSD()
     elif sys.startswith('CYGWIN'):
         return Cygwin()
+    elif sys == 'Haiku':
+        return Haiku()
     else:
         raise NotImplementedError(
             'toolchain() is not supported in this platform')

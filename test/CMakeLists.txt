@@ -60,6 +60,7 @@ function(get_test_dependencies SDK result_var_name)
      ("${SDK}" STREQUAL "TVOS_SIMULATOR") OR
      ("${SDK}" STREQUAL "WATCHOS_SIMULATOR") OR
      ("${SDK}" STREQUAL "LINUX") OR
+     ("${SDK}" STREQUAL "HAIKU") OR
      ("${SDK}" STREQUAL "CYGWIN") OR
      ("${SDK}" STREQUAL "FREEBSD") OR
      ("${SDK}" STREQUAL "ANDROID") OR

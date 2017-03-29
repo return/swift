@@ -327,6 +327,7 @@ class BuildScriptInvocation(object):
         if args.skip_build:
             args.skip_build_linux = True
             args.skip_build_freebsd = True
+	    args.skip_build_haiku = True
             args.skip_build_cygwin = True
             args.skip_build_osx = True
             args.skip_build_ios = True
@@ -373,6 +374,7 @@ class BuildScriptInvocation(object):
         if not args.test and not args.validation_test and not args.long_test:
             args.skip_test_linux = True
             args.skip_test_freebsd = True
+	    args.skip_test_haiku = True
             args.skip_test_cygwin = True
             args.skip_test_osx = True
             args.skip_test_ios = True
@@ -459,6 +461,8 @@ class BuildScriptInvocation(object):
             self.platforms_to_skip_build.add(StdlibDeploymentTarget.Linux)
         if args.skip_build_freebsd:
             self.platforms_to_skip_build.add(StdlibDeploymentTarget.FreeBSD)
+	if args.skip_build_haiku:
+            self.platforms_to_skip_build.add(StdlibDeploymentTarget.Haiku)
         if args.skip_build_cygwin:
             self.platforms_to_skip_build.add(StdlibDeploymentTarget.Cygwin)
         if args.skip_build_osx:
@@ -486,6 +490,8 @@ class BuildScriptInvocation(object):
             self.platforms_to_skip_test.add(StdlibDeploymentTarget.Linux)
         if args.skip_test_freebsd:
             self.platforms_to_skip_test.add(StdlibDeploymentTarget.FreeBSD)
+	if args.skip_test_haiku:
+            self.platforms_to_skip_test.add(StdlibDeploymentTarget.Haiku)
         if args.skip_test_cygwin:
             self.platforms_to_skip_test.add(StdlibDeploymentTarget.Cygwin)
         if args.skip_test_osx:
@@ -693,6 +699,8 @@ class BuildScriptInvocation(object):
             impl_args += ["--skip-build-linux"]
         if args.skip_build_freebsd:
             impl_args += ["--skip-build-freebsd"]
+	if args.skip_build_haiku:
+            impl_args += ["--skip-build-haiku"]
         if args.skip_build_cygwin:
             impl_args += ["--skip-build-cygwin"]
         if args.skip_build_osx:
@@ -729,6 +737,8 @@ class BuildScriptInvocation(object):
             impl_args += ["--skip-test-linux"]
         if args.skip_test_freebsd:
             impl_args += ["--skip-test-freebsd"]
+	if args.skip_test_haiku:
+            impl_args += ["--skip-test-haiku"]
         if args.skip_test_cygwin:
             impl_args += ["--skip-test-cygwin"]
         if args.skip_test_osx:
@@ -1608,6 +1618,10 @@ iterations with -O",
         help="skip testing Swift stdlibs for FreeBSD",
         action=arguments.action.optional_bool)
     run_tests_group.add_argument(
+        "--skip-test-haiku",
+        help="skip testing Swift stdlibs for Haiku",
+        action=arguments.action.optional_bool)
+    run_tests_group.add_argument(
         "--skip-test-cygwin",
         help="skip testing Swift stdlibs for Cygwin",
         action=arguments.action.optional_bool)
@@ -1652,6 +1666,10 @@ iterations with -O",
     run_build_group.add_argument(
         "--skip-build-freebsd",
         help="skip building Swift stdlibs for FreeBSD",
+        action=arguments.action.optional_bool)
+    run_build_group.add_argument(
+        "--skip-build-haiku",
+        help="skip building Swift stdlibs for Haiku",
         action=arguments.action.optional_bool)
     run_build_group.add_argument(
         "--skip-build-cygwin",

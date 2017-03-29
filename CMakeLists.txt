@@ -163,10 +163,10 @@ set(SWIFT_ANDROID_DEPLOY_DEVICE_PATH "" CACHE STRING
   "Path on an Android device where build products will be pushed. These are used when running the test suite against the device")
 
 #
-# User-configurable ICU specific options for Android, FreeBSD, Linux.
+# User-configurable ICU specific options for Android, FreeBSD, Linux and Haiku.
 #
 
-foreach(sdk ANDROID;FREEBSD;LINUX;WINDOWS)
+foreach(sdk ANDROID;FREEBSD;LINUX;WINDOWS;HAIKU)
   set(SWIFT_${sdk}_ICU_UC "" CACHE STRING
       "Path to a directory containing the icuuc library for ${sdk}")
   set(SWIFT_${sdk}_ICU_UC_INCLUDE "" CACHE STRING
@@ -454,6 +454,8 @@ else()
     set(SWIFT_HOST_VARIANT_SDK_default "WINDOWS")
   elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
     set(SWIFT_HOST_VARIANT_SDK_default "OSX")
+  elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Haiku")
+	set(SWIFT_HOST_VARIANT_SDK_default "HAIKU")
   else()
     message(FATAL_ERROR "Unable to detect SDK for host system: ${CMAKE_SYSTEM_NAME}")
   endif()
@@ -594,6 +596,22 @@ elseif("${SWIFT_HOST_VARIANT_SDK}" STREQUAL "CYGWIN")
 
   configure_sdk_unix(CYGWIN "Cygwin" "windows" "cygwin" "windows" "x86_64-unknown-windows-cygnus" "/")
   set(SWIFT_PRIMARY_VARIANT_SDK_default "${SWIFT_HOST_VARIANT_SDK}")
+  set(SWIFT_PRIMARY_VARIANT_ARCH_default "x86_64")
+  
+elseif("${SWIFT_HOST_VARIANT_SDK}" STREQUAL "HAIKU")
+
+  set(CMAKE_EXECUTABLE_FORMAT "ELF")
+  set(SWIFT_HOST_VARIANT "haiku" CACHE STRING
+      "Deployment OS for Swift host tools (the compiler) [haiku].")
+  #set(SWIFT_HOST_TRIPLE "x86_64-unknown-haiku")
+
+  # FIXME: Using the host OS version won't produce correct results for
+  # cross-compilation.
+  #string(REPLACE "[-].*" "" FREEBSD_SYSTEM_VERSION ${CMAKE_SYSTEM_VERSION})
+  #message(STATUS "FreeBSD Version: ${FREEBSD_SYSTEM_VERSION}")
+  #configure_sdk_unix(HAIKU "Haiku" "haiku" "haiku" "x86_64" "x86_64-unknown-haiku")
+  configure_sdk_unix(HAIKU "Haiku" "HAIKU" "${SWIFT_HOST_VARIANT}" "${SWIFT_HOST_VARIANT_ARCH}" "${SWIFT_HOST_TRIPLE}" "/")
+  set(SWIFT_PRIMARY_VARIANT_SDK_default  "${SWIFT_HOST_VARIANT_SDK}")
   set(SWIFT_PRIMARY_VARIANT_ARCH_default "x86_64")
 
 elseif("${SWIFT_HOST_VARIANT_SDK}" STREQUAL "WINDOWS")
