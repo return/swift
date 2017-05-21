@@ -26,8 +26,10 @@
 #define NOMINMAX
 #include <windows.h>
 #else
-#include <sys/resource.h>
+#if !defined(__HAIKU__)
 #include <sys/errno.h>
+#endif
+#include <sys/resource.h>
 #include <unistd.h>
 #endif
 #include <climits>
@@ -36,7 +38,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#if defined(__CYGWIN__) || defined(_WIN32)
+#if defined(__CYGWIN__) || defined(_WIN32) || defined(__HAIKU__)
 #include <sstream>
 #include <cmath>
 #define fmodl(lhs, rhs) std::fmod(lhs, rhs)
@@ -60,6 +62,11 @@ static long double swift_strtold_l(const char *nptr,
 #define strtod_l swift_strtod_l
 #define strtof_l swift_strtof_l
 #define strtold_l swift_strtold_l
+#if defined(__HAIKU__)
+#include <errno.h>
+#include <Errors.h>
+#endif
+#elif defined(__HAIKU__)
 #else
 #include <xlocale.h>
 #endif
@@ -142,7 +149,7 @@ static inline locale_t getCLocale() {
   // as C locale.
   return nullptr;
 }
-#elif defined(__CYGWIN__) || defined(_WIN32)
+#elif defined(__CYGWIN__) || defined(_WIN32) || defined(__HAIKU__)
 // In Cygwin, getCLocale() is not used.
 #else
 static locale_t makeCLocale() {
@@ -160,7 +167,7 @@ static locale_t getCLocale() {
 
 #if defined(__APPLE__)
 #define swift_snprintf_l snprintf_l
-#elif defined(__CYGWIN__) || defined(_WIN32)
+#elif defined(__CYGWIN__) || defined(_WIN32) || defined(__HAIKU__)
 // In Cygwin, swift_snprintf_l() is not used.
 #else
 static int swift_snprintf_l(char *Str, size_t StrSize, locale_t Locale,
@@ -193,7 +200,7 @@ static uint64_t swift_floatingPointToString(char *Buffer, size_t BufferLength,
     Precision = std::numeric_limits<T>::max_digits10;
   }
 
-#if defined(__CYGWIN__) || defined(_WIN32)
+#if defined(__CYGWIN__) || defined(_WIN32) || defined(__HAIKU__)
   // Cygwin does not support uselocale(), but we can use the locale feature 
   // in stringstream object.
   std::ostringstream ValueStream;
@@ -438,7 +445,7 @@ __mulodi4(di_int a, di_int b, int* overflow)
 }
 #endif
 
-#if defined(__CYGWIN__) || defined(_WIN32)
+#if defined(__CYGWIN__) || defined(_WIN32) || defined(__HAIKU__)
 // Cygwin does not support uselocale(), but we can use the locale feature 
 // in stringstream object.
 template <typename T>

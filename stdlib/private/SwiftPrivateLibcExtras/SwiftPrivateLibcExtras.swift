@@ -13,7 +13,7 @@
 import SwiftPrivate
 #if os(OSX) || os(iOS) || os(watchOS) || os(tvOS)
 import Darwin
-#elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || CYGWIN
+#elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || CYGWIN || os(Haiku)
 import Glibc
 #elseif os(Windows)
 import ucrt
@@ -21,7 +21,7 @@ import ucrt
 
 #if !os(Windows) || CYGWIN
 public func _stdlib_mkstemps(_ template: inout String, _ suffixlen: CInt) -> CInt {
-#if os(Android)
+#if os(Android) || os(Haiku)
   preconditionFailure("mkstemps doesn't work on Android")
 #else
   var utf8CStr = template.utf8CString

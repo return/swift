@@ -103,7 +103,11 @@ struct ReadWriteLockPlatformHelper {
 #endif
       ReadWriteLockHandle
       staticInit() {
+    // PTHREAD_RWLOCK_INITIALIZER Not defined in Haiku //
+    #ifndef __HAIKU__
     return PTHREAD_RWLOCK_INITIALIZER;
+    # endif
+    return {0, 0, {}};
   };
 
   static void init(ReadWriteLockHandle &rwlock);

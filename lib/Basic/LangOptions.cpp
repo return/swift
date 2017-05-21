@@ -35,6 +35,7 @@ static const StringRef SupportedConditionalCompilationOSs[] = {
   "Windows",
   "Android",
   "PS4",
+  "Haiku",
 };
 
 static const StringRef SupportedConditionalCompilationArches[] = {
@@ -158,6 +159,8 @@ std::pair<bool, bool> LangOptions::setTarget(llvm::Triple triple) {
     addPlatformConditionValue("os", "Windows");
   else if (triple.isPS4())
     addPlatformConditionValue("os", "PS4");
+  else if (llvm::Triple::Haiku)
+    addPlatformConditionValue("os", "Haiku");
   else
     UnsupportedOS = true;
 

@@ -197,6 +197,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
       ${EXECINFO_LIBRARY})
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Haiku")
+  find_library(EXECINFO_LIBRARY execinfo)
+  list(APPEND swift_core_private_link_libraries
+      ${EXECINFO_LIBRARY})
+endif()
+
 option(SWIFT_CHECK_ESSENTIAL_STDLIB
     "Check core standard library layering by linking its essential subset"
     FALSE)

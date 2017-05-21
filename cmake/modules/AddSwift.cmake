@@ -333,7 +333,7 @@ function(_add_variant_link_flags)
   elseif("${LFLAGS_SDK}" STREQUAL "FREEBSD")
     list(APPEND result "-lpthread")
   elseif("${LFLAGS_SDK}" STREQUAL "HAIKU")
-    list(APPEND result "-lpthread" "-lroot" "-ldl")
+	  list(APPEND result "-fPIC" "-lpthread" "-lroot" "-lbsd" "-Wl,-Bsymbolic")
   elseif("${LFLAGS_SDK}" STREQUAL "CYGWIN")
     # No extra libraries required.
   elseif("${LFLAGS_SDK}" STREQUAL "WINDOWS")

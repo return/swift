@@ -48,17 +48,25 @@ foreach(sdk ${SWIFT_SDKS})
     set(arch_subdir "${SWIFT_SDK_${sdk}_LIB_SUBDIR}/${arch}")
     set(module_dir "${SWIFTLIB_DIR}/${arch_subdir}")
 
-    # Determine the location of glibc headers based on the target.
-    set(GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH "/usr/include")
-    set(GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH ${GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH})
+    #if((${sdk} STREQUAL "HAIKU"))
+      set(GLIBC_INCLUDE_PATH "/system/develop/headers/posix")
+      set(GLIBC_ARCH_INCLUDE_PATH "/system/develop/headers/posix")
+      set(GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH "/system/develop/headers/")
+      #set(GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH ${GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH})
+    #endif()
 
+    if((${sdk} STREQUAL "LINUX" OR ${sdk} STREQUAL "FREEBSD") AND CMAKE_LIBRARY_ARCHITECTURE)
+      # Determine the location of glibc headers based on the target.
+      set(GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH "/usr/include")
+      set(GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH ${GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH})
+    endif()
     # Some SDKs place their headers in architecture-specific subfolders.
     if((${sdk} STREQUAL "LINUX" OR ${sdk} STREQUAL "FREEBSD") AND CMAKE_LIBRARY_ARCHITECTURE)
       set(GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH "${GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH}/${CMAKE_LIBRARY_ARCHITECTURE}")
     endif()
 
-    set(GLIBC_INCLUDE_PATH "${SWIFT_SDK_${sdk}_PATH}/${GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH}")
-    set(GLIBC_ARCH_INCLUDE_PATH "${SWIFT_SDK_${sdk}_PATH}/${GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH}")
+    #set(GLIBC_INCLUDE_PATH "${SWIFT_SDK_${sdk}_PATH}/${GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH}")
+    #set(GLIBC_ARCH_INCLUDE_PATH "${SWIFT_SDK_${sdk}_PATH}/${GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH}")
 
     set(glibc_modulemap_source "glibc.modulemap.gyb")
     set(glibc_modulemap_out "${module_dir}/glibc.modulemap")

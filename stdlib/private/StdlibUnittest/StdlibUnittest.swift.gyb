@@ -740,12 +740,21 @@ struct _ParentProcess {
         errorfds.set(_childStderr.fd)
       }
       var ret: CInt
+      #if os(Haiku)
       repeat {
         ret = _stdlib_select(&readfds, &writefds, &errorfds, nil)
-      } while ret == -1  &&  errno == EINTR
+      } 
+      while ret == -1 && errno == VINTR
+      #else
+      repeat {
+        ret = _stdlib_select(&readfds, &writefds, &errorfds, nil)
+      } 
+      while ret == -1 && errno == EINTR
+      #endif
       if ret <= 0 {
         fatalError("select() returned an error")
       }
+     
       if readfds.isset(_childStdout.fd) || errorfds.isset(_childStdout.fd) {
         _childStdout.read()
         while let line = _childStdout.getline() {
@@ -1434,6 +1443,7 @@ public enum OSVersion : CustomStringConvertible {
   case ps4
   case windowsCygnus
   case windows
+  case haiku
 
   public var description: String {
     switch self {
@@ -1463,6 +1473,8 @@ public enum OSVersion : CustomStringConvertible {
       return "Cygwin"
     case .windows:
       return "Windows"
+    case .haiku:
+      return "Haiku"
     }
   }
 }
@@ -1505,6 +1517,8 @@ func _getOSVersion() -> OSVersion {
   return .windowsCygnus
 #elseif os(Windows)
   return .windows
+#elseif os(Haiku)
+  return .haiku
 #else
   let productVersion = _stdlib_getSystemVersionPlistProperty("ProductVersion")!
   let (major, minor, bugFix) = _parseDottedVersionTriple(productVersion)
@@ -1586,6 +1600,8 @@ public enum TestRunPredicate : CustomStringConvertible {
   case windowsAny(reason: String)
 
   case windowsCygnusAny(reason: String)
+
+  case haikuAny(reason: String)
 
   case objCRuntime(/*reason:*/ String)
   case nativeRuntime(/*reason:*/ String)
@@ -1678,6 +1694,9 @@ public enum TestRunPredicate : CustomStringConvertible {
 
     case .windowsCygnusAny(reason: let reason):
       return "windowsCygnusAny(*, reason: \(reason))"
+
+    case .haikuAny(reason: let reason):
+          return "haikuAny(*, reason: \(reason))"
 
     case .objCRuntime(let reason):
       return "Objective-C runtime, reason: \(reason))"
@@ -1957,6 +1976,14 @@ public enum TestRunPredicate : CustomStringConvertible {
     case .windowsCygnusAny:
       switch _getRunningOSVersion() {
       case .windowsCygnus:
+        return true
+      default:
+        return false
+      }
+
+    case .haikuAny:
+      switch _getRunningOSVersion() {
+      case .haiku:
         return true
       default:
         return false

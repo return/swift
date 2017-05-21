@@ -603,14 +603,8 @@ elseif("${SWIFT_HOST_VARIANT_SDK}" STREQUAL "HAIKU")
   set(CMAKE_EXECUTABLE_FORMAT "ELF")
   set(SWIFT_HOST_VARIANT "haiku" CACHE STRING
       "Deployment OS for Swift host tools (the compiler) [haiku].")
-  #set(SWIFT_HOST_TRIPLE "x86_64-unknown-haiku")
-
-  # FIXME: Using the host OS version won't produce correct results for
-  # cross-compilation.
-  #string(REPLACE "[-].*" "" FREEBSD_SYSTEM_VERSION ${CMAKE_SYSTEM_VERSION})
-  #message(STATUS "FreeBSD Version: ${FREEBSD_SYSTEM_VERSION}")
-  #configure_sdk_unix(HAIKU "Haiku" "haiku" "haiku" "x86_64" "x86_64-unknown-haiku")
-  configure_sdk_unix(HAIKU "Haiku" "HAIKU" "${SWIFT_HOST_VARIANT}" "${SWIFT_HOST_VARIANT_ARCH}" "${SWIFT_HOST_TRIPLE}" "/")
+  set(SWIFT_HOST_TRIPLE "x86_64-unknown-haiku")
+  configure_sdk_unix(HAIKU "Haiku" "haiku" "${SWIFT_HOST_VARIANT}" "${SWIFT_HOST_VARIANT_ARCH}" "${SWIFT_HOST_TRIPLE}" "/")
   set(SWIFT_PRIMARY_VARIANT_SDK_default  "${SWIFT_HOST_VARIANT_SDK}")
   set(SWIFT_PRIMARY_VARIANT_ARCH_default "x86_64")
 

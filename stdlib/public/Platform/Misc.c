@@ -23,6 +23,9 @@
 #if !defined(_WIN32) || defined(__CYGWIN__)
 #include <sys/ioctl.h>
 #endif
+#if defined(__HAIKU__)
+#include <Errors.h>
+#endif
 
 #include "swift/Runtime/Config.h"
 
@@ -106,7 +109,6 @@ char **_swift_FreeBSD_getEnv() {
   return environ;
 }
 #endif // defined(__FreeBSD__)
-
 SWIFT_CC(swift)
 int _swift_Platform_getErrno() {
   return errno;
@@ -116,4 +118,3 @@ SWIFT_CC(swift)
 void _swift_Platform_setErrno(int value) {
   errno = value;
 }
-

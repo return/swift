@@ -17,10 +17,10 @@
 #include <stdint.h>
 #include "llvm/Support/Allocator.h"
 
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__HAIKU__)
 #include <stdio.h>
 #endif
-
+#define NDEBUG 1
 namespace swift {
 
 /// This is a node in a concurrent linked list.

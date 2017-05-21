@@ -120,6 +120,13 @@ SWIFT_RUNTIME_STDLIB_INTERFACE
 size_t swift::_swift_stdlib_malloc_size(const void *ptr) {
   return malloc_usable_size(const_cast<void *>(ptr));
 }
+#elif defined(__HAIKU__)
+#define _GNU_SOURCE
+#include <malloc.h>
+SWIFT_RUNTIME_STDLIB_INTERFACE
+size_t swift::_swift_stdlib_malloc_size(const void *ptr) {
+  return malloc_usable_size(const_cast<void *>(ptr));
+}
 #else
 #error No malloc_size analog known for this platform/libc.
 #endif

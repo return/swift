@@ -123,6 +123,35 @@ public var stderr : UnsafeMutablePointer<FILE> {
   }
 }
 
+#if os(Haiku)
+public var stdin : UnsafeMutablePointer<FILE> {
+  get {
+    return stdin
+  }
+  set {
+    stdinp = newValue
+  }
+}
+
+public var stdout : UnsafeMutablePointer<FILE> {
+  get {
+    return stdout
+  }
+  set {
+    stdoutp = newValue
+  }
+}
+
+public var stderr : UnsafeMutablePointer<FILE> {
+  get {
+    return stderr
+  }
+  set {
+    stderrp = newValue
+  }
+}
+#endif
+
 public func dprintf(_ fd: Int, _ format: UnsafePointer<Int8>, _ args: CVarArg...) -> Int32 {
   return withVaList(args) { va_args in
     vdprintf(Int32(fd), format, va_args)
@@ -135,7 +164,6 @@ public func snprintf(ptr: UnsafeMutablePointer<Int8>, _ len: Int, _ format: Unsa
   }
 }
 #endif
-
 
 //===----------------------------------------------------------------------===//
 // fcntl.h
@@ -367,7 +395,7 @@ public var SIG_DFL: sig_t? { return nil }
 public var SIG_IGN: sig_t { return unsafeBitCast(1, to: sig_t.self) }
 public var SIG_ERR: sig_t { return unsafeBitCast(-1, to: sig_t.self) }
 public var SIG_HOLD: sig_t { return unsafeBitCast(5, to: sig_t.self) }
-#elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android)
+#elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || os(Haiku)
 public typealias sighandler_t = __sighandler_t
 
 public var SIG_DFL: sighandler_t? { return nil }
@@ -417,7 +445,7 @@ public var SEM_FAILED: UnsafeMutablePointer<sem_t>? {
 #if os(OSX) || os(iOS) || os(watchOS) || os(tvOS)
   // The value is ABI.  Value verified to be correct for OS X, iOS, watchOS, tvOS.
   return UnsafeMutablePointer<sem_t>(bitPattern: -1)
-#elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || CYGWIN
+#elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || CYGWIN || os(Haiku)
   // The value is ABI.  Value verified to be correct on Glibc.
   return UnsafeMutablePointer<sem_t>(bitPattern: 0)
 #else

@@ -20,7 +20,9 @@
 
 #include "ImageInspection.h"
 #include <elf.h>
+#if !defined(__HAIKU__)
 #include <link.h>
+#endif
 #include <dlfcn.h>
 #include <string.h>
 
@@ -42,7 +44,9 @@ struct InspectArgs {
   /// Callback function to invoke with the metadata block.
   void (*addBlock)(const void *start, uintptr_t size);
 };
-
+// Haiku doesn't have dl_iterate_phdr() 
+// Until there is a equivalent implementation, this remains unimplemented.
+#if !defined(__HAIKU__)
 static int iteratePHDRCallback(struct dl_phdr_info *info,
                                size_t size, void *data) {
   const InspectArgs *inspectArgs = reinterpret_cast<const InspectArgs *>(data);
@@ -97,10 +101,73 @@ void swift::initializeTypeMetadataRecordLookup() {
   };
   dl_iterate_phdr(iteratePHDRCallback, &TypeMetadataRecordArgs);
 }
+#else
 
+// Haiku doesn't have dl_iterate_phdr() 
+// Until there is a equivalent implementation, this remains unimplemented.
+static int iteratePHDRCallback(void *info,
+                               size_t size, void *data) {
+  // const InspectArgs *inspectArgs = reinterpret_cast<const InspectArgs *>(data);
+  // void *handle;
+  // if (!info->dlpi_name || info->dlpi_name[0] == '\0') {
+  //   handle = dlopen(nullptr, RTLD_LAZY);
+  // } else {
+  //   handle = dlopen(info->dlpi_name, RTLD_LAZY | RTLD_NOLOAD);
+  // }
+
+  // if (!handle) {
+  //   // Not a shared library.
+  //   return 0;
+  // }
+
+  // const char *conformances =
+  //   reinterpret_cast<const char*>(dlsym(handle, inspectArgs->symbolName));
+
+  // if (!conformances) {
+  //   // if there are no conformances, don't hold this handle open.
+  //   dlclose(handle);
+  //   return 0;
+  // }
+
+  // // Extract the size of the conformances block from the head of the section.
+  // uint64_t conformancesSize;
+  // memcpy(&conformancesSize, conformances, sizeof(conformancesSize));
+  // conformances += sizeof(conformancesSize);
+
+  // inspectArgs->addBlock(conformances, conformancesSize);
+
+  // dlclose(handle);
+  return 0;
+}
+
+void swift::initializeProtocolConformanceLookup() {
+  // Search the loaded dls. This only searches the already
+  // loaded ones.
+  // FIXME: Find a way to have this continue to happen for dlopen-ed images.
+  // rdar://problem/19045112
+  InspectArgs ProtocolConformanceArgs = {
+    ProtocolConformancesSymbol,
+    addImageProtocolConformanceBlockCallback
+  };
+  // Haiku doesn't have dl_iterate_phdr() 
+  // Until there is a equivalent implementation, this remains unimplemented.
+  //dl_iterate_phdr(iteratePHDRCallback, &ProtocolConformanceArgs);
+}
+
+void swift::initializeTypeMetadataRecordLookup() {
+  InspectArgs TypeMetadataRecordArgs = {
+    TypeMetadataRecordsSymbol,
+    addImageTypeMetadataRecordBlockCallback
+  };
+  // Haiku doesn't have dl_iterate_phdr() 
+  // Until there is a equivalent implementation, this remains unimplemented.
+  //dl_iterate_phdr(iteratePHDRCallback, &TypeMetadataRecordArgs);
+}
+#endif
 int swift::lookupSymbol(const void *address, SymbolInfo *info) {
   Dl_info dlinfo;
-  if (dladdr(address, &dlinfo) == 0) {
+  // Haiku's dladdr() implementation takes a void* rather than a const void*.
+  if (dladdr((void*)address, &dlinfo) == 0) {
     return 0;
   }
 

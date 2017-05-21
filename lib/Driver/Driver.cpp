@@ -182,6 +182,9 @@ makeToolChain(Driver &driver, const llvm::Triple &target) {
   case llvm::Triple::FreeBSD:
     return llvm::make_unique<toolchains::GenericUnix>(driver, target);
     break;
+  case llvm::Triple::Haiku:
+    return llvm::make_unique<toolchains::GenericUnix>(driver, target);
+    break;
   case llvm::Triple::Win32:
     return llvm::make_unique<toolchains::Cygwin>(driver, target);
     break;
