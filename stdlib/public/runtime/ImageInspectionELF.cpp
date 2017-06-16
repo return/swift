@@ -59,16 +59,9 @@ struct InspectArgs {
   /// Callback function to invoke with the metadata block.
   void (*addBlock)(const void *start, uintptr_t size);
 };
-// Haiku doesn't have dl_iterate_phdr() 
-// Until there is a equivalent implementation, this remains unimplemented.
 
 static int _dl_iterate_phdr(int (*callback)(struct dl_phdr_info *info, size_t size, void *data), void *data);
 
-
-
-
-
-// The Haiku Implementation of dl_iterate_phdr()
 #if defined(__HAIKU__)
 static int _dl_iterate_phdr(int (*callback)(struct dl_phdr_info *info, size_t size, void *data), void *data) {
 	pid_t team_id = getpid();
