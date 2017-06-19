@@ -21,7 +21,7 @@
 #include <thread>
 
 #ifndef SWIFT_DEBUG_RUNTIME
-#define SWIFT_DEBUG_RUNTIME 1
+#define SWIFT_DEBUG_RUNTIME 0
 #endif
 
 namespace swift {
