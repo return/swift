@@ -300,7 +300,7 @@ public:
     // initialized value from the entry.
     // TODO: Haiku crashes in this section of code due to the locking issues 
     // in line 316. Commenting this out only serves as a temporary workaround, but still not acceptable for upstreaming.
-   /*/ 
+  /* 
     if (!insertResult.second) {
 
       // If the entry is already initialized, great.
@@ -333,7 +333,7 @@ public:
 
       return value;
     }
- /*/	
+ */	
     // Otherwise, we created the entry and are responsible for
     // creating the metadata.
     auto value = builder();
