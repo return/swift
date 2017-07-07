@@ -35,6 +35,7 @@
 
 
 #if defined(__HAIKU__)
+#define dl_iterate_phdr _dl_iterate_phdr
 struct dl_phdr_info {
 	void *dlpi_addr;
 	const char *dlpi_name;
@@ -142,11 +143,9 @@ void swift::initializeProtocolConformanceLookup() {
     ProtocolConformancesSymbol,
     addImageProtocolConformanceBlockCallback
   };
-  #if defined(__HAIKU__)
-  _dl_iterate_phdr(iteratePHDRCallback, &ProtocolConformanceArgs);
-  #else
+
   dl_iterate_phdr(iteratePHDRCallback, &ProtocolConformanceArgs);
-  #endif
+
 }
 
 void swift::initializeTypeMetadataRecordLookup() {
@@ -154,11 +153,8 @@ void swift::initializeTypeMetadataRecordLookup() {
     TypeMetadataRecordsSymbol,
     addImageTypeMetadataRecordBlockCallback
   };
-  #if defined(__HAIKU__)
-  _dl_iterate_phdr(iteratePHDRCallback, &TypeMetadataRecordArgs);
-  #else
+
   dl_iterate_phdr(iteratePHDRCallback, &TypeMetadataRecordArgs);
-  #endif
 }
 
 
