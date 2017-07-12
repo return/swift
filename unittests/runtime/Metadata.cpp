@@ -22,6 +22,10 @@
 #if !defined(_POSIX_BARRIERS) || _POSIX_BARRIERS < 0
 // Implement pthread_barrier_* for platforms that don't implement them (Darwin)
 
+#if defined(__HAIKU__)
+
+#else
+
 #define PTHREAD_BARRIER_SERIAL_THREAD 1
 struct pthread_barrier_t {
   pthread_mutex_t mutex;
@@ -90,6 +94,8 @@ static int pthread_barrier_wait(pthread_barrier_t *barrier) {
     return PTHREAD_BARRIER_SERIAL_THREAD;
   }
 }
+#endif
+
 #endif
 
 using namespace swift;
