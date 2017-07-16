@@ -1021,11 +1021,7 @@ toolchains::Darwin::constructInvocation(const LinkJobAction &job,
 
   // Configure the toolchain.
   // By default, use the system `ld` to link.
- #if defined(__HAIKU__)
-  const char *LD = "/bin/ld";
- #else
   const char *LD = "ld";
- #endif
   if (const Arg *A = context.Args.getLastArg(options::OPT_tools_directory)) {
     StringRef toolchainPath(A->getValue());
 

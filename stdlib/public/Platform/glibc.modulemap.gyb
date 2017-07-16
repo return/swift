@@ -26,12 +26,11 @@ module SwiftGlibc [system] {
   link "util"
 % end
 
-% if CMAKE_SDK in ["LINUX", "CYGWIN", "ANDROID"]:
+% if CMAKE_SDK != "FREEBSD" and CMAKE_SDK != "HAIKU":
   link "dl"
 % end
 
 % if CMAKE_SDK == "HAIKU":
-  link "pthread"
   link "root"
   link "network"
   link "bsd"

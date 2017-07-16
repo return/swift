@@ -528,24 +528,7 @@ class _InterruptibleSleep {
 
   /// Sleep for durationInSeconds or until another
   /// thread calls wake(), whichever comes first.
-#if os(Haiku)
-  func sleep(durationInSeconds duration: Int32) {
-    if completed {
-      return
-    }
 
-    var timeout = timeval(tv_sec: duration, tv_usec: 0)
-
-    var readFDs = _stdlib_fd_set()
-    var writeFDs = _stdlib_fd_set()
-    var errorFDs = _stdlib_fd_set()
-    readFDs.set(readEnd)
-
-    let ret = _stdlib_select(&readFDs, &writeFDs, &errorFDs, &timeout)
-    precondition(ret >= 0)
-    completed = true
-  }
-#else
   func sleep(durationInSeconds duration: Int) {
     if completed {
       return
@@ -562,7 +545,7 @@ class _InterruptibleSleep {
     precondition(ret >= 0)
     completed = true
   }
-#endif
+
   /// Wake the thread in sleep().
   func wake() {
     if completed { return }
@@ -617,7 +600,7 @@ public func runRaceTest<RT : RaceTestWithPerTrialData>(
     guard let timeoutInSeconds = timeoutInSeconds
     else { return }
 
-    alarmTimer.sleep(durationInSeconds: Int32(timeoutInSeconds))
+    alarmTimer.sleep(durationInSeconds: timeoutInSeconds)
     _ = timeoutReached.fetchAndAdd(1)
   }
 
