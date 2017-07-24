@@ -300,7 +300,7 @@ public:
     // initialized value from the entry.
     // TODO: Haiku crashes in this section of code due to the locking issues 
     // in line 316. Commenting this out only serves as a temporary workaround, but still not acceptable for upstreaming.
-  /* 
+   /*
     if (!insertResult.second) {
 
       // If the entry is already initialized, great.
@@ -312,6 +312,7 @@ public:
       // Otherwise, we have to grab the lock and wait for the value to
       // appear there.  Note that we have to check again immediately
       // after acquiring the lock to prevent a race.
+       
       auto concurrency = Concurrency.get();
       concurrency->Lock.withLockOrWait(concurrency->Queue, [&, this] {
         if ((value = entry->getValue())) {
@@ -333,7 +334,7 @@ public:
 
       return value;
     }
- */	
+    */
     // Otherwise, we created the entry and are responsible for
     // creating the metadata.
     auto value = builder();

@@ -1365,7 +1365,11 @@ toolchains::GenericUnix::constructInvocation(const LinkJobAction &job,
     Linker = getDefaultLinker();
   }
   if (!Linker.empty()) {
+#if defined(__HAIKU__)
+    Arguments.push_back(context.Args.MakeArgString("-use-ld=" + Linker));
+#else
     Arguments.push_back(context.Args.MakeArgString("-fuse-ld=" + Linker));
+#endif
   }
 
   // Configure the toolchain.
