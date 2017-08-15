@@ -302,7 +302,7 @@ public:
     // Ensure the existence of a map entry.
     auto insertResult = Map.getOrInsert(key);
     Entry *entry = insertResult.first;
-
+/*
     // If we didn't insert the entry, then we just need to get the
     // initialized value from the entry.
     if (!insertResult.second) {
@@ -337,7 +337,7 @@ public:
 
       return value;
     }
-
+*/
     // Otherwise, we created the entry and are responsible for
     // creating the metadata.
     auto value = builder();
@@ -348,10 +348,11 @@ public:
 #endif
 
     // Acquire the lock, set the value, and notify any waiters.
+    /*
     auto concurrency = Concurrency.get();
     concurrency->Lock.withLockThenNotifyAll(
         concurrency->Queue, [&entry, &value] { entry->setValue(value); });
-
+   */
     return value;
   }
 };

@@ -264,7 +264,7 @@
   // KERNEL.
 }
 
-#elseif os(Linux) || os(Android)
+#elseif os(Linux) || os(Android) || os(Haiku)
 
 /// Enumeration describing POSIX error codes.
 public enum POSIXErrorCode : Int32 {
