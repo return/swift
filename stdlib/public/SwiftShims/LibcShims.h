@@ -119,6 +119,8 @@ typedef int __swift_pthread_key_t;
 typedef unsigned int __swift_pthread_key_t;
 #elif defined(__FreeBSD__)
 typedef int __swift_pthread_key_t;
+#elif defined(__HAIKU__)
+typedef int __swift_pthread_key_t;
 #else
 typedef unsigned long __swift_pthread_key_t;
 #endif

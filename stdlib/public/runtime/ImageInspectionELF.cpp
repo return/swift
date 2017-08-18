@@ -24,8 +24,21 @@
 #include "swift/Runtime/Debug.h"
 #include <dlfcn.h>
 #include <elf.h>
-#include <link.h>
 #include <string.h>
+#include <unistd.h>
+
+#if !defined(__HAIKU__)
+#include <link.h>
+#else
+#include <OS.h>
+#include <image.h>
+struct dl_phdr_info {
+	void *dlpi_addr;
+	const char *dlpi_name;
+};
+#define dl_iterate_phdr _dl_iterate_phdr
+#define RTLD_NOLOAD RTLD_LOCAL
+#endif
 
 using namespace swift;
 
@@ -47,6 +60,34 @@ struct InspectArgs {
   /// Set to true when initialize*Lookup() is called.
   bool didInitializeLookup;
 };
+
+static int _dl_iterate_phdr(int (*callback)(struct dl_phdr_info *info, size_t size, void *data), void *data);
+#if defined(__HAIKU__)
+static int _dl_iterate_phdr(int (*callback)(struct dl_phdr_info *info, size_t size, void *data), void *data) {
+	pid_t team_id = getpid();
+	
+	image_info i_info;
+	int32 image_cookie = 0;
+
+	int ret = 0;
+	
+	while(get_next_image_info(team_id, &image_cookie, &i_info) == B_OK)
+	{
+	  if(i_info.type == B_LIBRARY_IMAGE)
+	  {
+	  // Get the symbol for this particular image //	
+	   dl_phdr_info hdr;
+	   hdr.dlpi_name = i_info.name;
+	   hdr.dlpi_addr = i_info.text;
+	   ret = callback(&hdr, sizeof(hdr), data);
+	   if (ret != 0)
+	   { break; }
+	  }
+	}
+
+	return ret;
+}
+#endif
 
 static InspectArgs ProtocolConformanceArgs = {
   ProtocolConformancesSymbol,
@@ -114,9 +155,15 @@ static void addBlockInImage(const InspectArgs *inspectArgs, const void *addr) {
   const char *fname = nullptr;
   if (addr) {
     Dl_info info;
+    #if defined(__HAIKU__)
+    if (dladdr((void*)addr, &info) == 0 || info.dli_fname == nullptr) {
+      return;
+    }
+    #else
     if (dladdr(addr, &info) == 0 || info.dli_fname == nullptr) {
       return;
     }
+    #endif
     fname = info.dli_fname;
   }
   SectionInfo block = getSectionInfo(fname, inspectArgs->symbolName);
@@ -159,7 +206,7 @@ void swift_addNewDSOImage(const void *addr) {
 
 int swift::lookupSymbol(const void *address, SymbolInfo *info) {
   Dl_info dlinfo;
-  if (dladdr(address, &dlinfo) == 0) {
+  if (dladdr((void*)address, &dlinfo) == 0) {
     return 0;
   }
 

@@ -12,7 +12,7 @@
 
 #if os(OSX) || os(iOS) || os(watchOS) || os(tvOS)
 import Darwin
-#elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || os(Cygwin)
+#elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || os(Cygwin) || os(Haiku)
 import Glibc
 #endif
 
@@ -69,7 +69,11 @@ public func _stdlib_pthread_barrier_init(
 ) -> CInt {
   barrier.pointee = _stdlib_pthread_barrier_t()
   if count == 0 {
+   #if os(Haiku)
+    errno = -4
+   #else
     errno = EINVAL
+   #endif
     return -1
   }
   barrier.pointee.mutex = UnsafeMutablePointer.allocate(capacity: 1)
