@@ -2496,18 +2496,26 @@ for host in "${ALL_HOSTS[@]}"; do
                     call mkdir -p "${LIBDISPATCH_BUILD_DIR}"
                     with_pushd "${LIBDISPATCH_SOURCE_DIR}" \
                         call autoreconf -fvi
+					if [[ "$(uname -s)" == "Haiku" ]] ; then
+					with_pushd "${LIBDISPATCH_BUILD_DIR}" \
+                        call env CC="${LLVM_BIN}/clang" CXX="${LLVM_BIN}/clang++" SWIFTC="${SWIFTC_BIN}" \
+                            "${LIBDISPATCH_SOURCE_DIR}"/configure --with-swift-toolchain="${SWIFT_BUILD_PATH}" \
+                            --with-build-variant=$dispatch_build_variant_arg  --disable-build-tests \
+                            --enable-embedded-blocks-runtime=yes --prefix="$(get_host_install_destdir ${host})$(get_host_install_prefix ${host})"
+					else
                     with_pushd "${LIBDISPATCH_BUILD_DIR}" \
                         call env CC="${LLVM_BIN}/clang" CXX="${LLVM_BIN}/clang++" SWIFTC="${SWIFTC_BIN}" \
                             "${LIBDISPATCH_SOURCE_DIR}"/configure --with-swift-toolchain="${SWIFT_BUILD_PATH}" \
                             --with-build-variant=$dispatch_build_variant_arg \
                             --prefix="$(get_host_install_destdir ${host})$(get_host_install_prefix ${host})"
+					fi
                 else
                     echo "Skipping reconfiguration of libdispatch"
                 fi
                 with_pushd "${LIBDISPATCH_BUILD_DIR}" \
                     call make
                 with_pushd "${LIBDISPATCH_BUILD_DIR}/tests" \
-                    call make build-tests
+                    #call make build-tests
 
                 # libdispatch builds itself and doesn't use cmake
                 continue
